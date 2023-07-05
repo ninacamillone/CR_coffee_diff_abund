@@ -15,7 +15,7 @@ x.asv <- aldex.clr(t(otu_table(ps_CR)), mm)
 x.asv.glm.test <- aldex.glm(x.asv, mm)
 
 #ASVs (filtered)
-x.asv.filt <- aldex.clr(t(otu_table(ps_CR)), mm)
+x.asv.filt <- aldex.clr(t(otu_table(CR_filt_asvs)), mm)
 x.asv.filt.glm.test <- aldex.glm(x.asv.filt, mm)
 
 #Genera (raw)
