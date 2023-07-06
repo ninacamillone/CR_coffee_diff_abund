@@ -39,7 +39,7 @@ otu_table(genus_abs_filt) <- otu_table(genus_abs_filt)[, pvals.sort$ix]
 # permutational method
 res_perm_genera_abs <- PERFect_perm(X = otu_table(genus_abs_filt), Order = "pvals", 
                                      pvals_sim = res_sim_genera_abs, algorithm = "full")
-genus_abs_filt <- res_perm2_genera_abs$filtX
+genus_abs_filt <- res_perm_genera_abs$filtX
 genus_abs_filt  <- phyloseq(otu_table(genus_abs_filt),sample_data(ps_CR))
 
 ## rarefied ASVs 
@@ -52,7 +52,6 @@ ASV_rare_filt  <- phyloseq(otu_table(ASV_rare_filt),sample_data(ps_CR))
 genus_rare_filt <- ps_genus_rare
 # simultaneous method
 res_sim_genera_rare <- PERFect_sim(otu_table(genus_rare_filt))
-dim(res_sim_genera_rare$filtX) # 22
 pvals  <- c(1, round(res_sim_genera_rare$pvals, 2))
 pvals.sort  <- sort.int(pvals, decreasing = TRUE, index.return = TRUE)
 otu_table(genus_rare_filt) <- otu_table(genus_rare_filt)[, pvals.sort$ix]
