@@ -21,3 +21,14 @@ taxa_names(ps_genus_rare) <- tax_table(ps_genus_rare)[,6]
 saveRDS(ps_genus_rare, file = "ps_genus_rare.RDS")
 
 #### Estimate absolute abundance ####
+
+#ASVs
+ps_CR_abs <- transform_sample_counts(ps_CR, function(x) x/sum(x)) # convert to relative abundance
+otu_table(ps_CR_abs) <- otu_table(ps_CR_abs)*sample_data(ps_CR)$qPCR #multiply by qPCR counts
+sample_sums(ps_CR_abs)==sample_data(ps_CR)$qPCR # check all true
+saveRDS(ps_CR_abs, file="ps_CR_abs.rds")
+
+#genera
+genus_abs <- tax_glom(ps_CR_abs, taxrank = "Genus")
+taxa_names(genus_abs) <- as.data.frame(tax_table(genus_abs))$Genus
+saveRDS(genus_abs, file="ps_genus_abs.rds")
