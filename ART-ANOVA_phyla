@@ -13,7 +13,7 @@ otu_table(ps_rel) <- otu_table(ps_rel)/rowSums(otu_table(ps_rel))
 
 #aggregate data at the phylum level
 ps_phylum_rel <- tax_glom(ps_rel, taxrank="Phylum")
-taxa_names(ps_phylum_rel) <- tax_table(ps_rel)[,2]
+taxa_names(ps_phylum_rel) <- tax_table(ps_phylum_rel)[,2]
 
 #filter out rarest taxa
 phylum_toPlot <- otu_table(ps_phylum_rel)[,colSums(otu_table(ps_phylum_rel)<0.02)<24]
@@ -24,7 +24,7 @@ p <- 1:42
 
 # note: interaction term is required to be considered in two-way ART-ANOVA
 for (i in 1:14) {
-  model_list[[i]] <- art(phylum_toPlot[,i] ~ met.seq$ShadeSun*met.seq$Herbicide)
+  model_list[[i]] <- art(phylum_toPlot[,i] ~ sample_data(ps_CR_clean)$ShadeSun*sample_data(ps_CR_clean)$Herbicide)
   anova_list[[i]] <- anova(model_list[[i]])
   p[c((i*3-2),(i*3-1),i*3)] <- anova_list[[i]][,7]
 }
@@ -51,7 +51,7 @@ p <- 1:42
 
 # note: interaction term is required to be considered
 for (i in 1:14) {
-  model_list[[i]] <- art(phylum_abs_toPlot[,i] ~ met.seq$ShadeSun*met.seq$Herbicide)
+  model_list[[i]] <- art(phylum_abs_toPlot[,i] ~ sample_data(ps_CR_clean)$ShadeSun*sample_data(ps_CR_clean)$Herbicide)
   anova_list[[i]] <- anova(model_list[[i]])
   p[c((i*3-2),(i*3-1),i*3)] <- anova_list[[i]][,7]
 }
