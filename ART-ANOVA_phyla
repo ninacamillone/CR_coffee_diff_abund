@@ -1,0 +1,39 @@
+#### set up ####
+library(ARTool)
+
+ps_CR <- readRDS(file = "ps_CR_clean.rds")
+
+#### ART-ANOVA on relative abundance ####
+
+#calculate relative abundance
+ps_rel <- ps_CR
+otu_table(ps_rel) <- otu_table(ps_rel)/rowSums(otu_table(ps_rel))
+
+#aggregate data at the phylum level
+ps_phylum_rel <- tax_glom(ps_rel, taxrank="Phylum")
+taxa_names(ps_phylum_rel) <- tax_table(ps_rel)[,2]
+
+#filter out rarest taxa
+phylum_toPlot <- otu_table(ps_phylum_rel)[,colSums(otu_table(ps_phylum_rel)<0.02)<24]
+
+model_list <- vector(mode = "list", length = 14)
+anova_list <- vector(mode = "list", length = 14)
+p <- 1:42
+
+# note: interaction term is required to be considered in two-way ART-ANOVA
+for (i in 1:14) {
+  model_list[[i]] <- art(phylum_toPlot[,i] ~ met.seq$ShadeSun*met.seq$Herbicide)
+  anova_list[[i]] <- anova(model_list[[i]])
+  p[c((i*3-2),(i*3-1),i*3)] <- anova_list[[i]][,7]
+}
+
+colnames(phylum_toPlot)[which(p<0.05)%/%3+1]
+adjusted_p_fdr <- p.adjust(p, method = "fdr")
+colnames(phylum_toPlot)[which(adjusted_p_fdr<0.05)%/%3+1]
+
+adjusted_p_fdr # order is shade, herbicide, interaction
+p_toPrint <- data.frame(matrix(round(adjusted_p_fdr,3), byrow=T, nrow=14, ncol=3),
+                      row.names = colnames(phylum_toPlot))
+colnames(p_toPrint) <- c("Shade","Herbicide","Interaction")
+p_toPrint
+write.csv(p_toPrint, "Adjusted_p_phyla.csv")
